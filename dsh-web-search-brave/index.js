@@ -83,14 +83,16 @@ class BraveSearchProvider {
   id = BRAVE_PROVIDER_ID;
   #resolveOptions;
   #limiter;
+  #limiterThrottleMs;
 
   constructor(resolveOptions) {
     this.#resolveOptions = resolveOptions;
   }
 
   #getLimiter(throttleMs) {
-    if (this.#limiter === void 0 || this.#limiter.minGapMs !== throttleMs) {
+    if (this.#limiter === void 0 || this.#limiterThrottleMs !== throttleMs) {
       this.#limiter = new RateLimiter(throttleMs);
+      this.#limiterThrottleMs = throttleMs;
     }
     return this.#limiter;
   }
@@ -140,7 +142,8 @@ class BraveSearchProvider {
       if (!response.ok) {
         if (response.status === 429 || response.status === 403) {
           const isQuota = isQuotaErrorHeader(response);
-          if (isQuota && attempt < maxAttempts) {
+          const hasRetryAfter = response.headers.get("Retry-After") !== null;
+          if ((isQuota || (response.status === 429 && hasRetryAfter)) && attempt < maxAttempts) {
             await sleep(backoffMs(response, attempt, signal), signal);
             continue;
           }
