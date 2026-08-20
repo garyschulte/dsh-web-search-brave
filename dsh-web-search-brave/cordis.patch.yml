@@ -1,5 +1,0 @@
-- insert:
-    - id: web-search-brave
-      name: 'dsh-web-search-brave'
-      config:
-        apiKeyEnv: BRAVE_API_KEY

@@ -1,0 +1,23 @@
+# node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# env / secrets
+.env
+*.local
+
+# npm pack artifacts
+*.tgz
+
+# editor / os
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# local research scratch (not part of the package)
+.npmcache/
+.adversary/
+.awesome-readme.md
+.registry-plugins.json
