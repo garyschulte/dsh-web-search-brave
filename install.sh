@@ -17,6 +17,35 @@ PKG_NAME="$(python3 -c "import json;print(json.load(open('$SRC/package.json'))['
 
 echo "Using package name: $PKG_NAME"
 
+# Self-heal: drop any previous install under a different package name
+# (e.g. an earlier unscoped dsh-web-search-brave) so it does not linger.
+OLD_NAME="dsh-web-search-brave"
+if [ "$OLD_NAME" != "$PKG_NAME" ]; then
+  python3 - "$PROFILE/package.json" "$OLD_NAME" "$PKG_NAME" <<'EOF'
+import json, sys, os
+path, old, new = sys.argv[1], sys.argv[2], sys.argv[3]
+if not os.path.exists(path):
+    sys.exit(0)
+with open(path) as f:
+    d = json.load(f)
+changed = False
+deps = d.get("dependencies", {})
+if old in deps and new not in deps:
+    del deps[old]
+    changed = True
+bundles = d.get("dsh", {}).get("profile", {}).get("bundles", [])
+if old in bundles:
+    bundles.remove(old)
+    changed = True
+if changed:
+    with open(path, "w") as f:
+        json.dump(d, f, indent=2)
+        f.write("\n")
+    print(f"cleaned stale references to {old}")
+EOF
+  [ -d "$NM/$OLD_NAME" ] && rm -rf "$NM/$OLD_NAME" && echo "removed stale node_modules/$OLD_NAME"
+fi
+
 echo "== 1/4 Copy package into profile node_modules =="
 rm -rf "$NM/$PKG_NAME"
 mkdir -p "$NM/$PKG_NAME"

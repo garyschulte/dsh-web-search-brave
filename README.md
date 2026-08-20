@@ -1,4 +1,4 @@
-# dsh-web-search-brave
+# @deads-inc/dsh-web-search-brave
 
 Brave Search API-backed web search provider for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`dsh`). It registers a `WebSearchProvider` into the `ctx.web` seam, so the built-in `web_search` tool works out of the box when you have a Brave Search API key.
 
@@ -78,18 +78,24 @@ This package is plain ESM with no build step and no runtime dependencies —
 everything it imports (`@deepseek-ai/*`) is provided by the host DSH install
 as peer dependencies.
 
-To test a local change:
+To test a local change, run `bash install.sh`, then in a fresh terminal:
 
 ```bash
-bash install.sh            # copies this repo into the web profile
-# then, in a fresh terminal, verify the module loads in profile context:
-node -e "
-  const m = await import('$HOME/.dsh/profiles/web/node_modules/dsh-web-search-brave');
+# 1. Confirm the bundle is wired into the composed profile config:
+dsh --profile web --dump-config | grep -A3 brave
+
+# 2. (Optional) Import the module directly. This needs the profile's
+#    node_modules to already carry the @deepseek-ai/* peers (a web profile
+#    that has any dshmarket package does). It fails harmlessly otherwise —
+#    dsh itself always resolves the peers from its own installation at boot:
+node --input-type=module -e "
+  const m = await import('@deads-inc/dsh-web-search-brave');
   if (typeof m.apply !== 'function' || m.name !== 'web-search-brave') throw new Error('bad module');
   console.log('OK: exports:', Object.keys(m).join(', '));
 "
-# and, with BRAVE_API_KEY set, check an end-to-end search:
-dsh --profile web -p "Use web_search to find one page about Node.js 24. Reply with just the URL."
+
+# 3. With BRAVE_API_KEY set, run a real end-to-end search:
+dsh --profile web "Use web_search to find one page about Node.js 24. Reply with just the URL."
 ```
 
 See [AGENTS.md](./AGENTS.md) for guidance for AI coding agents working on this repo.

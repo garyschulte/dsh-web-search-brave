@@ -22,8 +22,7 @@ Initial public release.
   imported `@deepseek-ai/*` package.
 
 ### Changed
-- Scoped npm name to `@deads-inc/dsh-web-search-brave` to avoid the
-  collision with the unrelated upstream `dsh-web-search-brave` package.
+- Adopted a scoped npm name, `@deads-inc/dsh-web-search-brave`.
 - Repo layout flattened to standard DSH bundle-plugin convention
   (`index.js` at root).
 - USER_AGENT now reflects the public package version.

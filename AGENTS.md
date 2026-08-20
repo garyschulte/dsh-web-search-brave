@@ -52,9 +52,13 @@ no runtime dependencies.
 
 ## Verification checklist before publishing
 
-- [ ] `node -e "import('./index.js')"` (inside the profile's
-      `node_modules` after `bash install.sh`) loads with no errors.
-- [ ] Smoke search works end-to-end with a real `BRAVE_API_KEY`.
+- [ ] `dsh --profile web --dump-config | grep -A3 brave` shows the bundle
+      and its patch row after `bash install.sh`.
+- [ ] `node --input-type=module -e "await import('@deads-inc/dsh-web-search-brave')"`
+      (run from the profile dir after `bash install.sh`) loads with no
+      errors and exposes `{apply, inject, name, Config}`.
+- [ ] Smoke search works end-to-end with a real `BRAVE_API_KEY`
+      (`dsh --profile web "<prompt that uses web_search>"`).
 - [ ] Concurrent searches (3+ in one turn) all succeed — the limiter
       serializes them; no 429 retries unless genuinely over quota.
 - [ ] `version`, `USER_AGENT`, and `CHANGELOG.md` are consistent.
