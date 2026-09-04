@@ -1,7 +1,7 @@
 {
   "name": "@deads-inc/dsh-web-search-brave",
   "description": "Brave Search API-backed web search provider for the DeepSeek Harness web capability seam (ctx.web)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "main": "index.js",
   "exports": {
@@ -55,8 +55,13 @@
     "@deepseek-ai/cordis": ">=4.0.1",
     "@deepseek-ai/dsh-credentials": ">=0.1.0-rc.6",
     "@deepseek-ai/dsh-launch-environment": ">=0.1.0-rc.6",
-    "@deepseek-ai/dsh-settings": ">=0.1.0-rc.6",
+    "@deepseek-ai/dsh-settings": ">=0.1.0-rc.7",
     "@deepseek-ai/dsh-web": ">=0.1.0-rc.6",
     "@deepseek-ai/schemastery": ">=3.18.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-settings": {
+      "optional": true
+    }
   }
 }

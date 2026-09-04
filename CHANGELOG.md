@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-09-04
+
+### Fixed
+- Compatibility with dsh 0.1.2-alpha.1+, which deleted the
+  `installSettingsSection` and `settingsNamespace` helpers from
+  `@deepseek-ai/dsh-settings`. A missing named ESM export is a SyntaxError at
+  module evaluation, so every plugin importing either one failed to load and
+  the host exited before boot. The plugin now registers its settings section
+  through the scoped settings service (`ctx.inject(["settings"], ...)`) and
+  validates its namespace itself, mirroring what the removed helpers did.
+- `@deepseek-ai/dsh-settings` is no longer imported; it remains an optional
+  peer dependency expressing the host versions whose settings service the
+  section targets.
+
 ## [1.0.0] - 2026-08-20
 
 Initial public release.

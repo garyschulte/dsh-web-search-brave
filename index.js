@@ -3,13 +3,12 @@
  */
 import z from "@deepseek-ai/schemastery";
 import { credentialRef } from "@deepseek-ai/dsh-credentials";
-import { installSettingsSection, settingsNamespace } from "@deepseek-ai/dsh-settings";
 import { launchEnvironmentOf } from "@deepseek-ai/dsh-launch-environment";
 import { WebError } from "@deepseek-ai/dsh-web";
 
 const BRAVE_PROVIDER_ID = "brave-search";
 const BRAVE_DEFAULT_BASE_URL = "https://api.search.brave.com/res/v1/web/search";
-const USER_AGENT = "dsh-web-search-brave/1.0.0";
+const USER_AGENT = "dsh-web-search-brave/1.1.0";
 
 const name = "web-search-brave";
 const inject = ["web"];
@@ -27,7 +26,13 @@ const Config = z.object({
   maxAttempts: z.number().min(1).step(1),
 });
 
-const BRAVE_SEARCH_SETTINGS_NAMESPACE = settingsNamespace("web-search-brave");
+// dsh 0.1.2-alpha.1 deleted `settingsNamespace`; a missing NAMED EXPORT is a
+// SyntaxError at module evaluation, so the namespace is validated here instead.
+const NAMESPACE_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+const BRAVE_SEARCH_SETTINGS_NAMESPACE = "web-search-brave";
+if (!NAMESPACE_PATTERN.test(BRAVE_SEARCH_SETTINGS_NAMESPACE)) {
+  throw new TypeError(`settings namespace "${BRAVE_SEARCH_SETTINGS_NAMESPACE}" must match ${String(NAMESPACE_PATTERN)}`);
+}
 
 function toInt(value, fallback) {
   if (value === void 0) return fallback;
@@ -261,9 +266,17 @@ function isAbortError(error) {
 
 function apply(ctx, config) {
   let current = () => config;
-  installSettingsSection(ctx, BRAVE_SEARCH_SETTINGS_NAMESPACE, Config, config, {
-    setSource: (source) => { current = source; },
-    onChange: () => {},
+  // `inject` is the graceful-degradation boundary: on a host with no settings
+  // service the callback never runs and the composed entry stands.
+  ctx.inject(["settings"], (scopedCtx) => {
+    const scope = scopedCtx.settings.register(BRAVE_SEARCH_SETTINGS_NAMESPACE, Config, { base: config });
+    current = () => scope.get();
+    // Unload (or a settings provider detaching) restores the composed entry,
+    // so a disabled section cannot leave the provider reading a value nobody
+    // can see or change any more.
+    scopedCtx.effect(() => () => {
+      current = () => config;
+    });
   });
   ctx.web.registerSearchProvider(new BraveSearchProvider(() => resolveOptions(ctx, current())));
 }
