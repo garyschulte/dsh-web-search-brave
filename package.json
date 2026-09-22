@@ -1,7 +1,7 @@
 {
   "name": "@deads-inc/dsh-web-search-brave",
   "description": "Brave Search API-backed web search provider for the DeepSeek Harness web capability seam (ctx.web)",
-  "version": "1.1.0-fork.1",
+  "version": "1.1.0-fork.2",
   "type": "module",
   "main": "index.js",
   "exports": {
