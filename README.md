@@ -27,6 +27,11 @@ export BRAVE_API_KEY=<your-key>
 bash install.sh
 ```
 
+Instead of exporting `BRAVE_API_KEY`, you can set the key in the web UI:
+**Settings → Plugins → Plugin configuration → Brave Search**. The card stores it in
+the DSH credentials service (`$DSH_HOME/.credentials.yaml`); a new key applies to
+the next search without a restart.
+
 Restart `dsh web`. Verify the provider is active:
 
 ```bash
@@ -38,8 +43,14 @@ dsh --profile web --dump-config | grep -A3 brave
 - Registers the `brave-search` provider on the `ctx.web` seam.
 - Resolves the API key in this order:
   1. Literal `apiKey` in the config (not recommended).
-  2. The `BRAVE_API_KEY` credential stored in the DSH credentials service.
+  2. The `BRAVE_API_KEY` credential stored in the DSH credentials service (what the
+     web UI's Brave Search card writes).
   3. The `BRAVE_API_KEY` env var at launch time.
+- Ships a browser half (`client/client.js`): a **Brave Search** card in Settings →
+  Plugins → Plugin configuration that shows whether a key is configured and saves or
+  removes it. The key itself never reaches the browser. The card always writes the
+  `BRAVE_API_KEY` reference, the default `apiKeyEnv`; if you change `apiKeyEnv`,
+  set the key under that name another way.
 - Serializes concurrent calls through an in-process rate limiter (1500ms gap, configurable).
 - On 429/403, honors `Retry-After`, backs off with exponential + jittered backoff (capped at 30s), up to 3 attempts.
 

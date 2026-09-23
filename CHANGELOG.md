@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- A **Brave Search** card in the web UI (Settings → Plugins → Plugin
+  configuration) for the API key: it shows whether a key is configured and saves
+  or removes it through the DSH credentials service, where the provider already
+  resolves `BRAVE_API_KEY` on every search, so a new key applies without a
+  restart. The key literal never reaches the browser. English and Chinese
+  strings. Browser half in `client/client.js` (hand-written, no build step),
+  registered through `dsh.client` in `package.json`.
+
 ## [1.1.0] - 2026-09-04
 
 ### Fixed

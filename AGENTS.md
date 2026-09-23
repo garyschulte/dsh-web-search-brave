@@ -6,8 +6,9 @@ Guidance for AI coding agents (and humans) working in this repository.
 
 A DeepSeek Harness (DSH) **bundle plugin**: a single ESM module (`index.js`)
 plus a `cordis.patch.yml` that plugs a Brave Search–backed `WebSearchProvider`
-into the harness's `ctx.web` seam. There is no build step, no test framework,
-no runtime dependencies.
+into the harness's `ctx.web` seam, and a hand-written browser half
+(`client/client.js`) with a Plugin configuration card for the API key. There is
+no build step, no test framework, no runtime dependencies.
 
 ## Non-negotiables
 
@@ -21,7 +22,10 @@ no runtime dependencies.
    phones home except the actual Brave Search request.
 3. **Keep the module self-contained.** The only public surface is what
    `export { apply, inject, name, Config }` exposes. The loader calls
-   `apply(ctx, config)`.
+   `apply(ctx, config)`. The browser half (`client/client.js`, exported as
+   `./client`) is a separate Module Loader factory exposing
+   `{ apply, inject, name }`; it resolves `react` through the host's module
+   table and imports nothing else.
 4. **`name` must stay `"web-search-brave"`** (the module name the loader
    keys on) and the provider id must stay `"brave-search"` (the value users
    set as `searchProvider` in their profile patch). Renaming either silently
@@ -66,9 +70,12 @@ no runtime dependencies.
 
 ## Repo layout
 
-- `index.js` — the entire plugin (provider, rate limiter, config, apply).
+- `index.js` — the entire host half (provider, rate limiter, config, apply).
+- `client/client.js` — browser half: the Brave Search Plugin configuration card
+  (key status, save, remove) and its en/zh strings. Hand-written, no build.
 - `cordis.patch.yml` — bundle-level patch (inserts provider registration).
 - `install.sh` — installs this checkout into the local web profile.
-- `package.json` — manifest; `dsh.bundle.patch` points at the yml.
+- `package.json` — manifest; `dsh.bundle.patch` points at the yml and
+  `dsh.client` registers the browser half.
 - `README.md` — user-facing docs. `AGENTS.md` — this file.
 - `CHANGELOG.md` — release history.
