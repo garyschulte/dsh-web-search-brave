@@ -8,7 +8,7 @@ import { WebError } from "@deepseek-ai/dsh-web";
 
 const BRAVE_PROVIDER_ID = "brave-search";
 const BRAVE_DEFAULT_BASE_URL = "https://api.search.brave.com/res/v1/web/search";
-const USER_AGENT = "dsh-web-search-brave/1.2.1";
+const USER_AGENT = "dsh-web-search-brave/1.2.2";
 
 const name = "web-search-brave";
 const inject = ["web"];

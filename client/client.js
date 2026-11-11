@@ -1,4 +1,4 @@
-// Browser half: a "Brave Search" card in Settings -> Plugins -> Plugin configuration.
+// Browser half: a "Brave Search" card in Settings -> Plugins.
 //
 // The card edits only the API key. The literal never reaches the browser: the card
 // asks the credentials domain whether BRAVE_API_KEY is configured and writes or
@@ -170,7 +170,7 @@ window.__ModuleLoader__.load({ id: "@deads-inc/dsh-web-search-brave", factory: (
   }
 
   const name = "dsh-web-search-brave";
-  const inject = ["slots", "locale", "remote", "remote.credentials"];
+  const inject = ["slots", "locale", "remote", "remote.credentials", "settings.plugins"];
 
   function apply(ctx) {
     installCss();
@@ -181,13 +181,14 @@ window.__ModuleLoader__.load({ id: "@deads-inc/dsh-web-search-brave", factory: (
     ctx.effect(() => ctx.remote.$on("credentials/reference-updated", (ref) => {
       if (ref === KEY_REF) store.read();
     }), "web-search-brave: credential invalidations");
-    // Keyed on the namespace the host half serves, so the Plugin configuration tab
-    // renders this card exactly when the provider is installed.
-    ctx.slots.inject("settings.plugin.item", () => ctx.slots.register({
-      name: "settings.plugin.item",
-      key: NS,
+    // Register as a tab in Settings -> Plugins, so the core settings plugin UI
+    // renders this card.  The tab id must be unique across all registered tabs.
+    ctx.slots.inject("settings.plugins.tab", () => ctx.slots.register({
+      name: "settings.plugins.tab",
+      id: "web-search-brave",
+      order: 0,
+      label: t("title"),
       locale: LOCALE_NS,
-      inject: () => ({ t }),
     }, () => h(BraveCard, { t, store })));
   }
 
