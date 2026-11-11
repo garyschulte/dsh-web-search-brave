@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-15
+
+### Changed
+- Updated `peerDependencies` to match the `0.2.2-rc.1` dsh release, which
+  republished all sub-packages under `0.0.1-rc.N` instead of the previous
+  `0.1.x-rc.N` scheme.  Every peerDep now uses `^0.0.1-rc.1` (or `^4.0.1-rc.1`
+  for cordis) so installation succeeds with `@deepseek-ai/dsh@0.2.2-rc.1`.
+- Bumped package version from 1.1.0 to 1.2.0; updated the `USER_AGENT` string
+  in `index.js` to match.
+
 ## [1.1.0] - 2026-09-04
 
 ### Fixed
