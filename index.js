@@ -5,11 +5,10 @@ import z from "@deepseek-ai/schemastery";
 import { credentialRef } from "@deepseek-ai/dsh-credentials";
 import { launchEnvironmentOf } from "@deepseek-ai/dsh-launch-environment";
 import { WebError } from "@deepseek-ai/dsh-web";
-import { gunzipSync } from "node:zlib";
 
 const BRAVE_PROVIDER_ID = "brave-search";
 const BRAVE_DEFAULT_BASE_URL = "https://api.search.brave.com/res/v1/web/search";
-const USER_AGENT = "dsh-web-search-brave/1.1.0";
+const USER_AGENT = "dsh-web-search-brave/1.2.1";
 
 const name = "web-search-brave";
 const inject = ["web"];
@@ -134,6 +133,7 @@ class BraveSearchProvider {
           redirect: "error",
           headers: {
             "Accept": "application/json",
+            "Accept-Encoding": "gzip",
             "X-Subscription-Token": apiKey,
             "User-Agent": USER_AGENT,
           },
@@ -155,7 +155,7 @@ class BraveSearchProvider {
         }
         let message = `Brave Search API error (HTTP ${response.status})`;
         try {
-          const parsed = await readJson(response);
+          const parsed = await response.json();
           const detail = typeof parsed.detail === "string" ? parsed.detail : parsed.detail?.message ?? parsed.message;
           if (detail !== void 0 && detail.length > 0) message = detail;
         } catch { /* ignore */ }
@@ -169,7 +169,7 @@ class BraveSearchProvider {
       }
 
       try {
-        const data = await readJson(response);
+        const data = await response.json();
         const results = data.web?.results ?? [];
         const seen = new Set();
         const sources = [];
@@ -264,19 +264,6 @@ function isAbortError(error) {
   return error instanceof DOMException && error.name === "AbortError";
 }
 
-/**
- * Parse a JSON response body, decompressing it first when it is still gzip.
- *
- * fetch negotiates and decodes compression itself, but a replaced global
- * dispatcher or an intermediary can hand back the raw gzip stream (the body
- * then starts with the gzip magic bytes 1f 8b), which JSON.parse rejects.
- */
-async function readJson(response) {
-  let bytes = new Uint8Array(await response.arrayBuffer());
-  if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) bytes = gunzipSync(bytes);
-  return JSON.parse(new TextDecoder().decode(bytes));
-}
-
 function apply(ctx, config) {
   let current = () => config;
   // `inject` is the graceful-degradation boundary: on a host with no settings
@@ -294,4 +281,4 @@ function apply(ctx, config) {
   ctx.web.registerSearchProvider(new BraveSearchProvider(() => resolveOptions(ctx, current())));
 }
 
-export { apply, inject, name, Config };
+export { apply, inject, name, Config, BRAVE_SEARCH_SETTINGS_NAMESPACE as settingsNamespace };

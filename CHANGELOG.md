@@ -19,6 +19,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   peer dependency expressing the host versions whose settings service the
   section targets.
 
+## [1.2.1] - 2026-11-11
+
+### Changed
+- Merged the `settings-card` feature (UI card for configuring the Brave API key
+  directly in the web UI) into the DSH 0.2.2-rc.1 compatible version.  The
+  client half (`client/client.js`) exposes a "Brave Search" configuration card
+  under Settings → Plugins → Plugin configuration, allowing the API key to be
+  stored in the credentials service without container env-var plumbing.
+- Updated peer dependencies to DSH 0.2.2-rc.1 conventions (`^0.0.1-rc.1`
+  suffix).
+
 ## [1.0.0] - 2026-08-20
 
 Initial public release.

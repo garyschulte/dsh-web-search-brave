@@ -54,6 +54,7 @@ mkdir -p "$NM/$PKG_NAME"
   for f in package.json index.js cordis.patch.yml README.md AGENTS.md CHANGELOG.md LICENSE; do
     [ -f "$f" ] && cp "$f" "$NM/$PKG_NAME/"
   done
+  [ -d client ] && cp -r client "$NM/$PKG_NAME/client"
 )
 
 echo "== 2/4 Register as profile dependency + bundle =="
