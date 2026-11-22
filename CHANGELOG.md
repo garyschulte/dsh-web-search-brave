@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2026-11-22
+
+### Changed
+- Updated peer dependencies to DSH 0.2.2-rc.5: `@deepseek-ai/dsh-*` packages
+  now `^0.2.2-rc.5` (DSH moved them off the `0.0.1-rc.x` line onto the host
+  version), `@deepseek-ai/cordis` `~4.1.0` and `@deepseek-ai/schemastery`
+  `~3.19.0`, matching what the rc.5 host packages themselves require. No code
+  changes: every imported symbol and the client slot/credentials contract are
+  unchanged in rc.5.
+
+## [1.2.2] - 2026-11-11
+
+### Fixed
+- The settings card registers as a tab in the `settings.plugins.tab` slot
+  (Settings → Plugins), as DSH 0.2.2-rc.1 expects.
+
 ## [1.1.0] - 2026-09-04
 
 ### Fixed
