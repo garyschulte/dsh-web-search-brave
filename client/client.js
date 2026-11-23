@@ -170,7 +170,10 @@ window.__ModuleLoader__.load({ id: "@deads-inc/dsh-web-search-brave", factory: (
   }
 
   const name = "dsh-web-search-brave";
-  const inject = ["slots", "locale", "remote", "remote.credentials", "settings.plugins"];
+  // No "settings.plugins" here: DSH 0.2.2-rc.5 provides no such client service, and
+  // an unresolved inject leaves the whole entry pending, so the card never renders.
+  // The card registers through the `settings.plugins.tab` slot via ctx.slots alone.
+  const inject = ["slots", "locale", "remote", "remote.credentials"];
 
   function apply(ctx) {
     installCss();

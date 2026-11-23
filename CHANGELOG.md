@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-11-22
+
+### Fixed
+- The Brave Search settings card never rendered on DSH 0.2.2-rc.5: the client
+  entry injected a `settings.plugins` service the host no longer provides, so
+  web boot left it pending ("waiting for service: settings.plugins") and the
+  API key could only be seen through generic config editors, which show
+  credential fields read-only. The unused inject is removed; the card registers
+  through the `settings.plugins.tab` slot as before.
+
 ## [1.2.3] - 2026-11-22
 
 ### Changed
